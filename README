@@ -1,0 +1,11 @@
+This is the beginning of a Forth interpreter in Python, written just to learn
+a little bit about Forth.
+
+There's still more to do and some of the fundamentals may have to change if it
+turns out some missing feature of Forth is not implementable the way I've
+currently done things.
+
+One thing I am proud of, though, is the way Python functions are turned into
+their equivalent operating on a stack.
+
+Suggestions welcome, though, especially for expanding coverage of Forth.
