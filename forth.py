@@ -38,7 +38,13 @@ class Forth:
     def execute(self, token_list):
         for token in token_list:
             if self.state == 0:
-                if is_int(token):
+                if token in self.dictionary:
+                    word = self.dictionary[token]
+                    if callable(word):
+                        word()
+                    else:
+                        self.execute(word)
+                elif is_int(token):
                     self.stack.append(int(token))
                 elif token == ":":
                     self.state = 1
@@ -46,12 +52,6 @@ class Forth:
                     self.state = 3
                 elif token == '."':
                     self.state = 4
-                elif token in self.dictionary:
-                    word = self.dictionary[token]
-                    if callable(word):
-                        word()
-                    else:
-                        self.execute(word)
                 else:
                     print "UNKNOWN TOKEN: %s" % token
             elif self.state == 1:
