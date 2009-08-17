@@ -139,6 +139,7 @@ forth.add("DUP", lambda n: (n, n))
 forth.add("OVER", lambda n1, n2: (n1, n2, n1))
 forth.add("ROT", lambda n1, n2, n3: (n2, n3, n1))
 forth.add("DROP", lambda n: None)
+forth.add("TUCK", lambda n1, n2: (n2, n1, n2))
 
 # words that can't be defined as a stack-expression
 
