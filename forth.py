@@ -16,11 +16,19 @@ def to_hex(n):
     return hex(n)[2:].upper()
 
 
+# states
+
+INTERPRET = 0
+DEFINITION = 1
+COMPILE = 2
+COMMENT = 3
+DOT_QUOTE = 4
+
 class Forth:
     
     def __init__(self):
         self.stack = []
-        self.state = 0
+        self.state = INTERPRET
         self.def_stack = []
         self.dot_quote_stack = []
         
@@ -43,7 +51,7 @@ class Forth:
     
     def execute(self, token_list):
         for token in token_list:
-            if self.state == 0:
+            if self.state == INTERPRET:
                 if token in self.dictionary:
                     word = self.dictionary[token]
                     if callable(word):
@@ -55,11 +63,11 @@ class Forth:
                 elif is_int(token, self.memory[0]): # @@@ assumes BASE is in 0
                     self.stack.append(int(token, self.memory[0]))
                 elif token == ":":
-                    self.state = 1
+                    self.state = DEFINITION
                 elif token == "(":
-                    self.state = 3
+                    self.state = COMMENT
                 elif token == '."':
-                    self.state = 4
+                    self.state = DOT_QUOTE
                 elif token == "!":
                     # because this needs memory access, it's not a normal
                     # dictionary word (yet)
@@ -81,28 +89,28 @@ class Forth:
                         sys.stdout.write(str(n) + " ")
                 else:
                     return "UNKNOWN TOKEN: %s" % token
-            elif self.state == 1:
+            elif self.state == DEFINITION:
                 name = token
-                self.state = 2
-            elif self.state == 2:
+                self.state = COMPILE
+            elif self.state == COMPILE:
                 if token == ":":
                     return ": INSIDE :"
                 elif token == ";":
                     self.dictionary[name] = self.def_stack[:]
                     self.def_stack = []
-                    self.state = 0
+                    self.state = INTERPRET
                 else:
                     self.def_stack.append(token)
-            elif self.state == 3: # comment
+            elif self.state == COMMENT:
                 if token == ")":
-                    self.state = 0
-            elif self.state == 4: # dot-quote
+                    self.state = INTERPRET
+            elif self.state == DOT_QUOTE:
                 if token.endswith('"'):
                     self.dot_quote_stack.append(token[:-1])
                     # @@@ should this print an extra space before the ok?
                     sys.stdout.write(" ".join(self.dot_quote_stack))
                     self.dot_quote_stack = []
-                    self.state = 0
+                    self.state = INTERPRET
                 else:
                     self.dot_quote_stack.append(token)
             else:
