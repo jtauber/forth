@@ -30,16 +30,12 @@ class Forth:
         # implementing a low-level language on top of a high-level language)
         self.memory = [0] * 256
         
-    def add(self, name, value):
-        if callable(value):
-            # version of func that operates on stack
-            def stack_func():
-                num_args = value.func_code.co_argcount
-                self.stack, args = self.stack[:-num_args], self.stack[-num_args:]
-                self.stack.extend(value(*args) or tuple())
-            self.dictionary[name] = stack_func
-        else:
-            self.dictionary[name] = value
+    def add(self, name, func):
+        def stack_func():
+            num_args = func.func_code.co_argcount
+            self.stack, args = self.stack[:-num_args], self.stack[-num_args:]
+            self.stack.extend(func(*args) or tuple())
+        self.dictionary[name] = stack_func
     
     def execute(self, token_list):
         for token in token_list:
@@ -134,7 +130,9 @@ forth.add(".", dot)
 
 # words defined in terms of other words
     
-forth.add("CR", ["13", "EMIT", "10", "EMIT"])
+forth.execute("""
+: CR 13 EMIT 10 EMIT ;
+""".split())
 
 
 while True:
