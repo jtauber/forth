@@ -23,7 +23,13 @@ class Forth:
         # @@@ at the moment, this is a dict in the python sense and doesn't
         # allow multiple definitions of a word the way Forth does
         self.dictionary = {}
-    
+        
+        # because some parts of Forth need to refer to things by address, here
+        # is an index-addressable memory. eventually the dictionary and stack
+        # may actually go this way too (and interesting impedence mis-match
+        # implementing a low-level language on top of a high-level language)
+        self.memory = [0] * 256
+        
     def add(self, name, value):
         if callable(value):
             # version of func that operates on stack
@@ -52,6 +58,18 @@ class Forth:
                     self.state = 3
                 elif token == '."':
                     self.state = 4
+                elif token == "!":
+                    # because this needs memory access, it's not a normal
+                    # dictionary word (yet)
+                    addr = self.stack.pop()
+                    value = self.stack.pop()
+                    self.memory[addr] = value
+                elif token == "@":
+                    # because this needs memory access, it's not a normal
+                    # dictionary word (yet)
+                    addr = self.stack.pop()
+                    value = self.memory[addr]
+                    self.stack.append(value)
                 else:
                     print "UNKNOWN TOKEN: %s" % token
             elif self.state == 1:
