@@ -4,12 +4,16 @@
 import sys
 
 
-def is_int(x):
+def is_int(x, base=10):
     try:
-        int(x)
+        int(x, base)
         return True
     except ValueError:
         return False
+
+
+def to_hex(n):
+    return hex(n)[2:].upper()
 
 
 class Forth:
@@ -46,8 +50,8 @@ class Forth:
                         word()
                     else:
                         self.execute(word)
-                elif is_int(token):
-                    self.stack.append(int(token))
+                elif is_int(token, self.memory[0]): # @@@ assumes BASE is in 0
+                    self.stack.append(int(token, self.memory[0]))
                 elif token == ":":
                     self.state = 1
                 elif token == "(":
@@ -66,6 +70,13 @@ class Forth:
                     addr = self.stack.pop()
                     value = self.memory[addr]
                     self.stack.append(value)
+                elif token == ".":
+                    # had to move this back here so it can access BASE
+                    n = self.stack.pop()
+                    if self.memory[0] == 16: # @@@ assumes BASE is in 0
+                        sys.stdout.write(to_hex(n) + " ")
+                    else:
+                        sys.stdout.write(str(n) + " ")
                 else:
                     print "UNKNOWN TOKEN: %s" % token
             elif self.state == 1:
@@ -119,13 +130,9 @@ def emit(c):
 def bye():
     sys.exit(0)
 
-def dot(n):
-    sys.stdout.write(str(n) + " ")
-    
 forth.add("SPACES", spaces)
 forth.add("EMIT", emit)
 forth.add("BYE", bye)
-forth.add(".", dot)
 
 
 # initial code
