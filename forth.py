@@ -23,6 +23,7 @@ DEFINITION = 1
 COMPILE = 2
 COMMENT = 3
 DOT_QUOTE = 4
+SEE = 5
 
 class Forth:
     
@@ -68,6 +69,8 @@ class Forth:
                     self.state = COMMENT
                 elif token == '."':
                     self.state = DOT_QUOTE
+                elif token == "SEE":
+                    self.state = SEE
                 elif token == "!":
                     # because this needs memory access, it's not a normal
                     # dictionary word (yet)
@@ -113,6 +116,12 @@ class Forth:
                     self.state = INTERPRET
                 else:
                     self.dot_quote_stack.append(token)
+            elif self.state == SEE:
+                self.state = INTERPRET # @@@ how do we know we weren't in COMPILE?
+                if token in self.dictionary:
+                    print self.dictionary[token],
+                else:
+                    return "UNKNOWN TOKEN: %s" % token
             else:
                 return "UNKNOWN STATE: %s" % self.state
 
