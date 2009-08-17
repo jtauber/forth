@@ -108,8 +108,13 @@ def spaces(n):
 def emit(c):
     sys.stdout.write(chr(c))
 
+def bye():
+    sys.exit(0)
+
 forth.add("SPACES", spaces)
 forth.add("EMIT", emit)
+forth.add("BYE", bye)
+
 
 # words defined in terms of other words
     
