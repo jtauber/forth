@@ -49,7 +49,9 @@ class Forth:
                     if callable(word):
                         word()
                     else:
-                        self.execute(word)
+                        error = self.execute(word)
+                        if error:
+                            return error
                 elif is_int(token, self.memory[0]): # @@@ assumes BASE is in 0
                     self.stack.append(int(token, self.memory[0]))
                 elif token == ":":
@@ -78,13 +80,13 @@ class Forth:
                     else:
                         sys.stdout.write(str(n) + " ")
                 else:
-                    print "UNKNOWN TOKEN: %s" % token
+                    return "UNKNOWN TOKEN: %s" % token
             elif self.state == 1:
                 name = token
                 self.state = 2
             elif self.state == 2:
                 if token == ":":
-                    print ": INSIDE :"
+                    return ": INSIDE :"
                 elif token == ";":
                     self.dictionary[name] = self.def_stack[:]
                     self.def_stack = []
@@ -102,7 +104,7 @@ class Forth:
                 else:
                     self.dot_quote_stack.append(token)
             else:
-                print "UNKNOWN STATE: %s" % self.state
+                return "UNKNOWN STATE: %s" % self.state
 
 
 forth = Forth()
@@ -152,5 +154,8 @@ DECIMAL
 
 while True:
     line = raw_input("> ")
-    forth.execute(line.split())
-    print "ok"
+    error = forth.execute(line.split())
+    if error:
+        print error
+    else:
+        print "ok"
