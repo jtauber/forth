@@ -40,12 +40,6 @@ class Forth:
             if self.state == 0:
                 if is_int(token):
                     self.stack.append(int(token))
-                elif token == ".":
-                    if self.stack:
-                        n = self.stack.pop()
-                        sys.stdout.write(str(n) + " ")
-                    else:
-                        sys.stdout.write("stack empty ") # @@@ don't show okay
                 elif token == ":":
                     self.state = 1
                 elif token == "(":
@@ -111,9 +105,13 @@ def emit(c):
 def bye():
     sys.exit(0)
 
+def dot(n):
+    sys.stdout.write(str(n) + " ")
+    
 forth.add("SPACES", spaces)
 forth.add("EMIT", emit)
 forth.add("BYE", bye)
+forth.add(".", dot)
 
 
 # words defined in terms of other words
