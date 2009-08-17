@@ -128,10 +128,18 @@ forth.add("BYE", bye)
 forth.add(".", dot)
 
 
-# words defined in terms of other words
-    
+# initial code
+
 forth.execute("""
+
+: BASE 0 ;
+
 : CR 13 EMIT 10 EMIT ;
+: HEX 16 BASE ! ;
+: DECIMAL 10 BASE ! ;
+
+DECIMAL
+
 """.split())
 
 
