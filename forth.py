@@ -97,7 +97,9 @@ class Forth:
                 if token == ")":
                     self.state = 0
             elif self.state == 4: # dot-quote
-                if token == '"':
+                if token.endswith('"'):
+                    self.dot_quote_stack.append(token[:-1])
+                    # @@@ should this print an extra space before the ok?
                     sys.stdout.write(" ".join(self.dot_quote_stack))
                     self.dot_quote_stack = []
                     self.state = 0
