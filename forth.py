@@ -171,11 +171,14 @@ DECIMAL
 
 """.split())
 
+def run():
+    while True:
+        line = raw_input("> ")
+        error = forth.execute(line.split())
+        if error:
+            print error
+        else:
+            print "ok"
 
-while True:
-    line = raw_input("> ")
-    error = forth.execute(line.split())
-    if error:
-        print error
-    else:
-        print "ok"
+if __name__ == "__main__":
+    run()
